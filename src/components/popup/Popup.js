@@ -1,3 +1,4 @@
+import { useCallback, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { PopupEpisodes } from './PopupEpisodes';
 import { PopupHeader } from './PopupHeader';
@@ -16,19 +17,43 @@ export function Popup({ settings: { visible, content = {} }, setSettings }) {
     episode: episodes
   } = content;
 
-  function togglePopup(e) {
-    if (e.currentTarget !== e.target) {
-      return;
-    }
+  const togglePopup = useCallback(
+    (e) => {
+      if (e.currentTarget !== e.target) {
+        return;
+      }
 
-    setSettings((prevState) => ({
-      ...prevState,
-      visible: !prevState.visible
-    }));
-  }
+      setSettings((prevState) => ({
+        ...prevState,
+        visible: !prevState.visible
+      }));
+    },
+    [setSettings]
+  );
+
+  const handleEscape = useCallback(
+    (e) => {
+      if (visible && e.key === 'Escape') {
+        setSettings((prevState) => ({
+          ...prevState,
+          visible: false
+        }));
+      }
+    },
+    [visible, setSettings]
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [handleEscape]);
 
   return (
     <PopupContainer visible={visible}>
+      <PopupBackdrop onClick={togglePopup} />
       <StyledPopup>
         <CloseIcon onClick={togglePopup} />
 
@@ -51,13 +76,10 @@ export function Popup({ settings: { visible, content = {} }, setSettings }) {
 
 const PopupContainer = styled.div`
   position: fixed;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.4);
   width: 100%;
   height: 100vh;
   color: #fff;
-  top: 0;
-  left: 0;
+  inset: 0;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -70,6 +92,14 @@ const PopupContainer = styled.div`
       visibility: initial;
       pointer-events: all;
     `}
+`;
+
+const PopupBackdrop = styled.div`
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  height: 100%;
+  inset: 0;
 `;
 
 const StyledPopup = styled.div`
@@ -98,18 +128,24 @@ const StyledPopup = styled.div`
   }
 `;
 
-const CloseIcon = styled.div`
+const CloseIcon = styled.button`
   cursor: pointer;
   position: fixed;
   right: calc(30% - 10px);
   top: calc(10vh - 30px);
   width: 30px;
   height: 30px;
+  border: none;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   background: #83bf46aa;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #83bf46ff;
+  }
 
   &:before,
   &:after {
@@ -118,17 +154,16 @@ const CloseIcon = styled.div`
     display: block;
     width: 20px;
     height: 2px;
+    left: 50%;
     background: #fff;
   }
 
   &:before {
-    left: 4.5px;
-    transform: rotate(-45deg);
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
 
   &:after {
-    right: 4.5px;
-    transform: rotate(45deg);
+    transform: translate(-50%, -50%) rotate(45deg);
   }
 
   @media (max-width: 930px) {
