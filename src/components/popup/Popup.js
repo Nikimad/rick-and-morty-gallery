@@ -1,10 +1,11 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styled, { css } from 'styled-components';
 import { PopupEpisodes } from './PopupEpisodes';
 import { PopupHeader } from './PopupHeader';
 import { PopupInfo } from './PopupInfo';
 
-export function Popup({ settings: { visible, content = {} }, setSettings }) {
+export function Popup({ data, isPopupOpen, closePopup }) {
   const {
     name,
     gender,
@@ -15,47 +16,56 @@ export function Popup({ settings: { visible, content = {} }, setSettings }) {
     origin,
     location,
     episode: episodes
-  } = content;
+  } = data;
 
-  const togglePopup = useCallback(
-    (e) => {
-      if (e.currentTarget !== e.target) {
-        return;
-      }
+  const popupRef = useRef(null);
 
-      setSettings((prevState) => ({
-        ...prevState,
-        visible: !prevState.visible
-      }));
-    },
-    [setSettings]
-  );
+  const [isPopupVisible, setIsPopupVisible] = useState(isPopupOpen);
+
+  const hidePopup = useCallback(() => {
+    if (isPopupVisible) setIsPopupVisible(false);
+  }, [isPopupVisible]);
+
+  const handleClosePopup = useCallback(() => {
+    if (!isPopupVisible) closePopup();
+  }, [isPopupVisible, closePopup]);
 
   const handleEscape = useCallback(
     (e) => {
-      if (visible && e.key === 'Escape') {
-        setSettings((prevState) => ({
-          ...prevState,
-          visible: false
-        }));
+      if (e.key === 'Escape' && isPopupVisible) {
+        hidePopup();
       }
     },
-    [visible, setSettings]
+    [isPopupVisible, hidePopup]
   );
 
   useEffect(() => {
     document.addEventListener('keydown', handleEscape);
 
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
+    return () => document.removeEventListener('keydown', handleEscape);
   }, [handleEscape]);
 
-  return (
-    <PopupContainer visible={visible}>
-      <PopupBackdrop onClick={togglePopup} />
-      <StyledPopup>
-        <CloseIcon onClick={togglePopup} />
+  const popupRoot = document.getElementById('popup-root');
+
+  return createPortal(
+    <PopupContainer
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="popup-title"
+      aria-describedby="popup-description"
+      onAnimationEnd={handleClosePopup}
+      visible={isPopupVisible}
+    >
+      <PopupBackdrop onClick={hidePopup} />
+      <StyledPopup ref={popupRef} tabIndex="-1">
+        <CloseIcon onClick={hidePopup} />
+
+        <h2 id="popup-title" style={{ display: 'none' }}>
+          {name}
+        </h2>
+        <p id="popup-description" style={{ display: 'none' }}>
+          Character details for {name}, species {species}, status {status}.
+        </p>
 
         <PopupHeader
           name={name}
@@ -67,10 +77,10 @@ export function Popup({ settings: { visible, content = {} }, setSettings }) {
         />
 
         <PopupInfo origin={origin} location={location} />
-
         <PopupEpisodes episodes={episodes} />
       </StyledPopup>
-    </PopupContainer>
+    </PopupContainer>,
+    popupRoot
   );
 }
 
@@ -80,18 +90,37 @@ const PopupContainer = styled.div`
   height: 100vh;
   color: #fff;
   inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.3s, visible 0.3s;
+
+  animation-fill-mode: forwards;
 
   ${({ visible }) =>
-    visible &&
-    css`
+    visible
+      ? css`
+          animation-duration: 0.3s;
+          animation-name: fadeIn;
+        `
+      : css`
+          animation-duration: 0.2s;
+          animation-name: fadeOut;
+        `}
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
       opacity: 1;
-      visibility: initial;
-      pointer-events: all;
-    `}
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
 `;
 
 const PopupBackdrop = styled.div`
