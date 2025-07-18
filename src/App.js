@@ -4,14 +4,11 @@ import { useData } from './hooks/useData';
 
 import { Pagination, CardsList, Header, AppState } from './components';
 
-import { CharacterFilter } from './components/_filter/_Filter';
-
 export const App = () => {
   const { isFetching, isError } = useData();
 
   return (
     <Main>
-      <CharacterFilter />
       <Header />
       <AppState />
       {!isFetching && !isError && (
