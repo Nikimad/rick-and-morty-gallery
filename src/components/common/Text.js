@@ -1,19 +1,24 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export function Text({
   className,
   children,
+  component,
   style,
+  display,
   lineHeight,
-  color = '#ccc',
-  fontSize = '16px'
+  color,
+  fontSize
 }) {
   return (
     <StyledText
+      as={component}
       className={className}
       style={style}
+      _display={display}
       _color={color}
       _fontSize={fontSize}
+      _lineHeight={lineHeight}
     >
       {children}
     </StyledText>
@@ -21,6 +26,9 @@ export function Text({
 }
 
 const StyledText = styled.span`
+  display: ${({ _display }) => _display};
   color: ${({ _color }) => _color};
   font-size: ${({ _fontSize }) => _fontSize};
+  line-height: ${({ _lineHeight }) => _lineHeight};
+  margin: ${css(({ as }) => as !== 'span' && 0)};
 `;

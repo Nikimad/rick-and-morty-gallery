@@ -1,23 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+
 import styled, { css } from 'styled-components';
-import { PopupEpisodes } from './PopupEpisodes';
-import { PopupHeader } from './PopupHeader';
-import { PopupInfo } from './PopupInfo';
 
-export function Popup({ data, isPopupOpen, closePopup }) {
-  const {
-    name,
-    gender,
-    image,
-    status,
-    species,
-    type,
-    origin,
-    location,
-    episode: episodes
-  } = data;
-
+export const Popup = ({ isPopupOpen, closePopup, children }) => {
   const popupRef = useRef(null);
 
   const [isPopupVisible, setIsPopupVisible] = useState(isPopupOpen);
@@ -59,30 +45,12 @@ export function Popup({ data, isPopupOpen, closePopup }) {
       <PopupBackdrop onClick={hidePopup} />
       <StyledPopup ref={popupRef} tabIndex="-1">
         <CloseIcon onClick={hidePopup} />
-
-        <h2 id="popup-title" style={{ display: 'none' }}>
-          {name}
-        </h2>
-        <p id="popup-description" style={{ display: 'none' }}>
-          Character details for {name}, species {species}, status {status}.
-        </p>
-
-        <PopupHeader
-          name={name}
-          gender={gender}
-          image={image}
-          status={status}
-          species={species}
-          type={type}
-        />
-
-        <PopupInfo origin={origin} location={location} />
-        <PopupEpisodes episodes={episodes} />
+        {children}
       </StyledPopup>
     </PopupContainer>,
     popupRoot
   );
-}
+};
 
 const PopupContainer = styled.div`
   position: fixed;

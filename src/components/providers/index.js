@@ -1,2 +1,2 @@
-export { DataProvider, useData } from './DataProvider';
+export { DataProvider } from './DataProvider';
 export { InertProvider } from './InertProvider';

@@ -1,16 +1,12 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import axios from 'axios';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+
+import { DataContext } from '../context/DataContext';
 
 const API_URL = 'https://rickandmortyapi.com/api/character/';
 
-export function DataProvider({ children }) {
+export const DataProvider = ({ children }) => {
   const [activePage, setActivePage] = useState(0);
   const [characters, setCharacters] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -22,18 +18,16 @@ export function DataProvider({ children }) {
     setIsFetching(true);
     setIsError(false);
 
-    axios
-      .get(url)
-      .then(({ data }) => {
-        setIsFetching(false);
-        setCharacters(data.results);
-        setInfo(data.info);
-      })
-      .catch((e) => {
-        setIsFetching(false);
-        setIsError(true);
-        console.error(e);
-      });
+    try {
+      const { data } = await axios.get(url);
+      const { results = [], info = {} } = data;
+      setCharacters(results);
+      setInfo(info);
+    } catch (error) {
+      setIsError(true);
+    } finally {
+      setIsFetching(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -58,8 +52,4 @@ export function DataProvider({ children }) {
   return (
     <DataContext.Provider value={dataValue}>{children}</DataContext.Provider>
   );
-}
-
-const DataContext = createContext({});
-
-export const useData = () => useContext(DataContext);
+};

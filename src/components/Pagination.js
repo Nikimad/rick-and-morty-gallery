@@ -1,8 +1,9 @@
 import styled from 'styled-components';
-import { useCallback, useEffect, useState } from 'react';
-import { useData } from './providers';
 
-export function Pagination() {
+import { useCallback, useEffect, useState } from 'react';
+import { useData } from '../hooks/useData';
+
+export const Pagination = () => {
   const [pages, setPages] = useState([]);
   const { apiURL, info, activePage, setActivePage, setApiURL } = useData();
 
@@ -31,38 +32,30 @@ export function Pagination() {
 
   return (
     <StyledPagination>
-      {pages[activePage - 1] && (
+      {activePage > 1 && (
         <>
-          {activePage - 1 !== 0 && (
-            <>
-              <Page onClick={pageClickHandler(0)}>« First</Page>
-              <Ellipsis>...</Ellipsis>
-            </>
-          )}
-
-          <Page onClick={pageClickHandler(activePage - 1)}>{activePage}</Page>
+          <Page onClick={pageClickHandler(0)}>« First</Page>
+          <Ellipsis>…</Ellipsis>
         </>
       )}
-
-      <Page active>{activePage + 1}</Page>
-
-      {pages[activePage + 1] && (
+      {activePage > 0 && (
+        <Page onClick={pageClickHandler(activePage - 1)}>{activePage}</Page>
+      )}
+      <Page active aria-current="page">
+        {activePage + 1}
+      </Page>
+      {activePage < pages.length - 1 && (
+        <Page onClick={pageClickHandler(activePage + 1)}>{activePage + 2}</Page>
+      )}
+      {activePage < pages.length - 2 && (
         <>
-          <Page onClick={pageClickHandler(activePage + 1)}>
-            {activePage + 2}
-          </Page>
-
-          {activePage + 1 !== pages.length - 1 && (
-            <>
-              <Ellipsis>...</Ellipsis>
-              <Page onClick={pageClickHandler(pages.length)}>Last »</Page>
-            </>
-          )}
+          <Ellipsis>…</Ellipsis>
+          <Page onClick={pageClickHandler(pages.length - 1)}>Last »</Page>
         </>
       )}
     </StyledPagination>
   );
-}
+};
 
 const StyledPagination = styled.div`
   width: 100%;
@@ -80,14 +73,6 @@ const Page = styled.span`
   &:hover {
     color: #83bf46;
   }
-`;
-
-const Container = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  justify-items: center;
-  gap: 30px;
 `;
 
 const Ellipsis = styled(Page)`
