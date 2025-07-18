@@ -1,25 +1,25 @@
 import styled from 'styled-components';
-import { Pagination, ItemsGrid, useData, Header, AppState } from './components';
 
-export function App() {
+import { useData } from './hooks/useData';
+
+import { Pagination, CardsList, Header, AppState } from './components';
+
+export const App = () => {
   const { isFetching, isError } = useData();
 
   return (
     <Main>
       <Header />
-
       <AppState />
-
       {!isFetching && !isError && (
         <>
-          <ItemsGrid />
-
+          <CardsList />
           <Pagination />
         </>
       )}
     </Main>
   );
-}
+};
 
 const Main = styled.main`
   height: 100%;

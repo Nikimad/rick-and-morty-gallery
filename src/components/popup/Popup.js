@@ -1,75 +1,102 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+
 import styled, { css } from 'styled-components';
-import { PopupEpisodes } from './PopupEpisodes';
-import { PopupHeader } from './PopupHeader';
-import { PopupInfo } from './PopupInfo';
 
-export function Popup({ settings: { visible, content = {} }, setSettings }) {
-  const {
-    name,
-    gender,
-    image,
-    status,
-    species,
-    type,
-    origin,
-    location,
-    episode: episodes
-  } = content;
+export const Popup = ({ isPopupOpen, closePopup, children }) => {
+  const popupRef = useRef(null);
 
-  function togglePopup(e) {
-    if (e.currentTarget !== e.target) {
-      return;
-    }
+  const [isPopupVisible, setIsPopupVisible] = useState(isPopupOpen);
 
-    setSettings((prevState) => ({
-      ...prevState,
-      visible: !prevState.visible
-    }));
-  }
+  const hidePopup = useCallback(() => {
+    if (isPopupVisible) setIsPopupVisible(false);
+  }, [isPopupVisible]);
 
-  return (
-    <PopupContainer visible={visible}>
-      <StyledPopup>
-        <CloseIcon onClick={togglePopup} />
+  const handleClosePopup = useCallback(() => {
+    if (!isPopupVisible) closePopup();
+  }, [isPopupVisible, closePopup]);
 
-        <PopupHeader
-          name={name}
-          gender={gender}
-          image={image}
-          status={status}
-          species={species}
-          type={type}
-        />
-
-        <PopupInfo origin={origin} location={location} />
-
-        <PopupEpisodes episodes={episodes} />
-      </StyledPopup>
-    </PopupContainer>
+  const handleEscape = useCallback(
+    (e) => {
+      if (e.key === 'Escape' && isPopupVisible) {
+        hidePopup();
+      }
+    },
+    [isPopupVisible, hidePopup]
   );
-}
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleEscape);
+
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [handleEscape]);
+
+  const popupRoot = document.getElementById('popup-root');
+
+  return createPortal(
+    <PopupContainer
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="popup-title"
+      aria-describedby="popup-description"
+      onAnimationEnd={handleClosePopup}
+      visible={isPopupVisible}
+    >
+      <PopupBackdrop onClick={hidePopup} />
+      <StyledPopup ref={popupRef} tabIndex="-1">
+        <CloseIcon onClick={hidePopup} />
+        {children}
+      </StyledPopup>
+    </PopupContainer>,
+    popupRoot
+  );
+};
 
 const PopupContainer = styled.div`
   position: fixed;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.4);
   width: 100%;
   height: 100vh;
   color: #fff;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.3s, visible 0.3s;
+  inset: 0;
+
+  animation-fill-mode: forwards;
 
   ${({ visible }) =>
-    visible &&
-    css`
+    visible
+      ? css`
+          animation-duration: 0.3s;
+          animation-name: fadeIn;
+        `
+      : css`
+          animation-duration: 0.2s;
+          animation-name: fadeOut;
+        `}
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
       opacity: 1;
-      visibility: initial;
-      pointer-events: all;
-    `}
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+`;
+
+const PopupBackdrop = styled.div`
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  height: 100%;
+  inset: 0;
 `;
 
 const StyledPopup = styled.div`
@@ -98,18 +125,24 @@ const StyledPopup = styled.div`
   }
 `;
 
-const CloseIcon = styled.div`
+const CloseIcon = styled.button`
   cursor: pointer;
   position: fixed;
   right: calc(30% - 10px);
   top: calc(10vh - 30px);
   width: 30px;
   height: 30px;
+  border: none;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   background: #83bf46aa;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #83bf46ff;
+  }
 
   &:before,
   &:after {
@@ -118,17 +151,16 @@ const CloseIcon = styled.div`
     display: block;
     width: 20px;
     height: 2px;
+    left: 50%;
     background: #fff;
   }
 
   &:before {
-    left: 4.5px;
-    transform: rotate(-45deg);
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
 
   &:after {
-    right: 4.5px;
-    transform: rotate(45deg);
+    transform: translate(-50%, -50%) rotate(45deg);
   }
 
   @media (max-width: 930px) {
