@@ -1,6 +1,8 @@
 import styled from 'styled-components';
+
+import { useData } from '../hooks/useData';
+
 import { Loader, Text } from './common';
-import { useData } from './providers';
 
 export function AppState() {
   const { isFetching, isError } = useData();
@@ -8,7 +10,9 @@ export function AppState() {
   if (isError) {
     return (
       <AppStateContainer>
-        <Text>An error has occurred. Try other search parameters.</Text>
+        <Text color="#ccc">
+          An error has occurred. Try other search parameters.
+        </Text>
       </AppStateContainer>
     );
   }
