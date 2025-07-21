@@ -1,34 +1,36 @@
 import styled from 'styled-components';
 
-import { useData } from '../hooks/useData';
+import { useAppState } from '../hooks/useAppState';
 
 import { Loader, Text } from './common';
 
-export function AppState() {
-  const { isFetching, isError } = useData();
+export const Main = ({ children }) => {
+  const {
+    meta: { isLoading, isError }
+  } = useAppState();
 
   if (isError) {
     return (
-      <AppStateContainer>
+      <StyledMain>
         <Text color="#ccc">
           An error has occurred. Try other search parameters.
         </Text>
-      </AppStateContainer>
+      </StyledMain>
     );
   }
 
-  if (isFetching) {
+  if (isLoading) {
     return (
-      <AppStateContainer>
+      <StyledMain>
         <Loader />
-      </AppStateContainer>
+      </StyledMain>
     );
   }
 
-  return null;
-}
+  return children;
+};
 
-const AppStateContainer = styled.div`
+const StyledMain = styled.main`
   height: 100%;
   display: flex;
   align-items: center;
