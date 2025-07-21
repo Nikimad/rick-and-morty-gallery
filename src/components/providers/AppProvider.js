@@ -5,7 +5,7 @@ import { CHARACTERS_EP, INIT_APP_STATE } from '../../constants';
 import { getData } from '../../utils/getData';
 import { AppContext } from '../context/AppContext';
 
-export const getStateFromUrl = () => {
+const getStateFromUrl = () => {
   const searchParams = new URLSearchParams(window.location.search);
   const newState = { ...INIT_APP_STATE };
 
