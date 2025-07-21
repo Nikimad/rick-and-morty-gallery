@@ -68,9 +68,13 @@ export const FiltersForm = () => {
     handleChange(name)(e.target.value);
   };
 
-  const handleSubmit = useCallback(() => {
-    changeState({ ...filters, page: 0 });
-  }, [filters, changeState]);
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      changeState({ ...filters, page: 0 });
+    },
+    [filters, changeState]
+  );
 
   const handleReset = useCallback(() => {
     resetState();
@@ -136,8 +140,12 @@ const StyledForm = styled.form`
   display: grid;
   grid-template-columns: repeat(3, 33%);
   grid-template-rows: min-content min-content;
-  gap: 12px;
-  justify-content: end;
+  gap: 16px;
+  justify-content: center;
+
+  @media (max-width: 930px) {
+    width: 80%;
+  }
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
