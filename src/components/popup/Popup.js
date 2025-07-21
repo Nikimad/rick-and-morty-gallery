@@ -55,7 +55,7 @@ export const Popup = ({ isPopupOpen, closePopup, children }) => {
 const PopupContainer = styled.div`
   position: fixed;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100svh;
   color: #fff;
   inset: 0;
 
@@ -104,7 +104,7 @@ const StyledPopup = styled.div`
   width: 40%;
   margin: 0 auto;
   height: auto;
-  max-height: 90vh;
+  max-height: 90svh;
   margin-top: calc(10vh - 20px);
   background: #263750;
   border-radius: 15px;
