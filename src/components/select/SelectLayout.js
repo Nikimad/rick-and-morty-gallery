@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Text } from '../common';
 import { Label } from './Label';
 import { Combobox } from './Combobox';
-import { ComboboxButton } from './СomboboxButton';
+import { ComboboxButton } from './ComboboxButton';
 import { ListBox } from './ListBox';
 import { Option } from './Option';
 

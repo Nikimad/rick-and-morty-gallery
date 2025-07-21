@@ -1,17 +1,22 @@
+import { useCallback } from 'react';
+
 import styled from 'styled-components';
 
 import { ChevronUpIcon, ChevronDownIcon, CloseIcon } from '../icons';
 
 export const ComboboxButton = ({ hasValue, isExpanded, onClear, onClick }) => {
-  const handleClick = (e) => {
-    e.stopPropagation();
-    if (hasValue) {
-      onClear();
-    }
-    if (!hasValue) {
-      onClick();
-    }
-  };
+  const handleClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      if (hasValue) {
+        onClear();
+      }
+      if (!hasValue) {
+        onClick();
+      }
+    },
+    [hasValue, onClear, onClick]
+  );
 
   return (
     <StyledButton
