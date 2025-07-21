@@ -20,6 +20,7 @@ const HeaderContainer = styled.div`
 
   @media (max-width: 930px) {
     justify-content: center;
+    justify-items: center;
     gap: 30px;
   }
 
