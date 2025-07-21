@@ -1,27 +1,18 @@
 import styled from 'styled-components';
 
-import { useData } from './hooks/useData';
+import { Header, Main, CardsList, Pagination } from './components';
 
-import { Pagination, CardsList, Header, AppState } from './components';
-
-export const App = () => {
-  const { isFetching, isError } = useData();
-
-  return (
+export const App = () => (
+  <StyledAppWrapper>
+    <Header />
     <Main>
-      <Header />
-      <AppState />
-      {!isFetching && !isError && (
-        <>
-          <CardsList />
-          <Pagination />
-        </>
-      )}
+      <CardsList />
+      <Pagination />
     </Main>
-  );
-};
+  </StyledAppWrapper>
+);
 
-const Main = styled.main`
+const StyledAppWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
