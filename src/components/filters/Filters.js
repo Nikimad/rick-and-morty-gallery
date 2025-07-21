@@ -68,9 +68,13 @@ export const FiltersForm = () => {
     handleChange(name)(e.target.value);
   };
 
-  const handleSubmit = useCallback(() => {
-    changeState({ ...filters, page: 0 });
-  }, [filters, changeState]);
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      changeState({ ...filters, page: 0 });
+    },
+    [filters, changeState]
+  );
 
   const handleReset = useCallback(() => {
     resetState();
