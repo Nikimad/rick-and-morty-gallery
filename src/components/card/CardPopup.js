@@ -4,7 +4,7 @@ import { PopupMainInfo } from './PopupMainInfo';
 import { AdditioalInfo } from './AdditionalInfo';
 import { EpisodesList } from './EpisodesList';
 
-export const CardPopup = ({ data }) => {
+export const CardPopup = ({ data, episodesList, onEpisodesAdd }) => {
   const {
     name,
     gender,
@@ -14,7 +14,7 @@ export const CardPopup = ({ data }) => {
     type,
     origin,
     location,
-    episode: episodes
+    episode: episodesUrls
   } = data;
 
   return (
@@ -28,7 +28,11 @@ export const CardPopup = ({ data }) => {
         type={type}
       />
       <AdditioalInfo origin={origin} location={location} />
-      <EpisodesList episodes={episodes} />
+      <EpisodesList
+        episodesUrls={episodesUrls}
+        episodes={episodesList}
+        onEpisodesAdd={onEpisodesAdd}
+      />
     </StyledCardPopup>
   );
 };

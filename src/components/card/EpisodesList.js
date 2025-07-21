@@ -1,54 +1,61 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import styled, { css } from 'styled-components';
-import axios from 'axios';
+
+import { EPISODES_EP } from '../../constants';
+import { getData } from '../../utils/getData';
 
 import { Loader, Text } from '../common';
 import { EpisodeItem } from './EpisodeItem';
 
-const API_EPISODES_URL = 'https://rickandmortyapi.com/api/episode';
+export const EpisodesList = ({ episodesUrls, episodes, onEpisodesAdd }) => {
+  const shouldFetchEpisodes =
+    episodesUrls?.length && episodesUrls.length !== episodes.length;
 
-export const EpisodesList = ({ episodes }) => {
-  const [series, setSeries] = useState([]);
-  const [isFetching, setIsFetching] = useState(true);
+  const [isLoading, setIsLoading] = useState(shouldFetchEpisodes);
+
+  const fetchEpisodes = useCallback(async () => {
+    setIsLoading(true);
+
+    const episodesIds = episodesUrls
+      .map((ep) => ep.match(/\d+$/)?.[0])
+      .filter(Boolean);
+
+    const [isError, data] = await getData(
+      `${EPISODES_EP}/${episodesIds.join(',')}`
+    );
+
+    if (!isError && data) {
+      onEpisodesAdd(Array.isArray(data) ? data : [data]);
+    }
+
+    if (isError) {
+      onEpisodesAdd([]);
+    }
+
+    setIsLoading(false);
+  }, [episodesUrls, onEpisodesAdd]);
 
   useEffect(() => {
-    if (!episodes?.length) return;
+    if (shouldFetchEpisodes) {
+      fetchEpisodes();
+    }
+  }, [shouldFetchEpisodes, fetchEpisodes]);
 
-    const fetchEpisodes = async () => {
-      try {
-        setIsFetching(true);
-        const episodesIds = episodes
-          .map((ep) => ep.match(/\d+$/)?.[0])
-          .filter(Boolean);
-        const { data } = await axios.get(
-          `${API_EPISODES_URL}/${episodesIds.join(',')}`
-        );
-        setSeries(Array.isArray(data) ? data : [data]);
-      } catch (error) {
-        setSeries([]);
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchEpisodes();
-  }, [episodes]);
-
-  if (isFetching) {
+  if (isLoading) {
     return <Loader />;
   }
 
   return (
     <StyledEpisodesListWrapper>
       <StyledEpisodesListName>Participated in episodes:</StyledEpisodesListName>
-      <StyledEpisodesList _length={series.length}>
-        {series?.map(({ id, name, episode }) => (
+      <StyledEpisodesList _length={episodes.length}>
+        {episodes?.map(({ id, name, episode }) => (
           <EpisodeItem
             key={id}
             name={name}
             episode={episode}
-            length={series.length}
+            length={episodes.length}
           />
         ))}
       </StyledEpisodesList>
