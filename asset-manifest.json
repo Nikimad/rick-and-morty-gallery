@@ -1,18 +1,21 @@
 {
   "files": {
     "main.css": "/rick-and-morty-gallery/static/css/main.869ee58a.css",
-    "main.js": "/rick-and-morty-gallery/static/js/main.355add3f.js",
+    "main.js": "/rick-and-morty-gallery/static/js/main.cc600112.js",
     "static/media/green-portal.png": "/rick-and-morty-gallery/static/media/green-portal.a218ca229093de6f08d2.png",
     "static/media/widget-logo.png": "/rick-and-morty-gallery/static/media/widget-logo.42c8df0b92603ef2e2e2.png",
     "static/media/male.svg": "/rick-and-morty-gallery/static/media/male.42d01c2c5e1d7025a594642a761f1939.svg",
     "index.html": "/rick-and-morty-gallery/index.html",
     "static/media/genderless.svg": "/rick-and-morty-gallery/static/media/genderless.dec799ed2f3cfbb46522c185f9dbb030.svg",
     "static/media/female.svg": "/rick-and-morty-gallery/static/media/female.02f202d68bdd63c12690625cf6aec3fd.svg",
+    "static/media/close.svg": "/rick-and-morty-gallery/static/media/close.3fab91b888c2304abfa5562b39247dfa.svg",
+    "static/media/chevron-down.svg": "/rick-and-morty-gallery/static/media/chevron-down.90e80ded6ae209876277000bc5406c04.svg",
+    "static/media/chevron-up.svg": "/rick-and-morty-gallery/static/media/chevron-up.4473b13ecaf00dbff45315d4df5ba000.svg",
     "main.869ee58a.css.map": "/rick-and-morty-gallery/static/css/main.869ee58a.css.map",
-    "main.355add3f.js.map": "/rick-and-morty-gallery/static/js/main.355add3f.js.map"
+    "main.cc600112.js.map": "/rick-and-morty-gallery/static/js/main.cc600112.js.map"
   },
   "entrypoints": [
     "static/css/main.869ee58a.css",
-    "static/js/main.355add3f.js"
+    "static/js/main.cc600112.js"
   ]
 }
