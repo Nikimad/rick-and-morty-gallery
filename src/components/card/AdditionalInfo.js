@@ -27,6 +27,7 @@ const StyledAdditionalInfo = styled.div`
   display: flex;
   justify-content: space-between;
   flex-direction: row;
+  gap: 40px;
 
   @media (max-width: 600px) {
     flex-direction: column;

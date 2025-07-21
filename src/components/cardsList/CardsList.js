@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 
-import { useData } from '../../hooks/useData';
+import { useAppState } from '../../hooks/useAppState';
 
 import { Card } from '../card';
 
 export const CardsList = () => {
-  const { characters } = useData();
+  const {
+    data: { characters }
+  } = useAppState();
 
   if (!characters.length) {
     return null;
