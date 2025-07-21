@@ -1,2 +1,1 @@
-export { DataProvider } from './DataProvider';
-export { InertProvider } from './InertProvider';
+export { Providers } from './Providers';
