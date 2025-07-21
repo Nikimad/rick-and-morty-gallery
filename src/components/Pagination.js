@@ -1,56 +1,54 @@
+import { useCallback } from 'react';
+
 import styled from 'styled-components';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useData } from '../hooks/useData';
+import { useAppState } from '../hooks/useAppState';
 
 export const Pagination = () => {
-  const [pages, setPages] = useState([]);
-  const { apiURL, info, activePage, setActivePage, setApiURL } = useData();
+  const {
+    data: { info },
+    state: { page },
+    changeState
+  } = useAppState();
 
-  const pageClickHandler = useCallback(
+  const activePage = page > 0 ? page : page + 1;
+
+  const handlePageOnClick = useCallback(
     (index) => () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setActivePage(index);
-      setApiURL(pages[index]);
+      changeState({ page: index });
     },
-    [setActivePage, setApiURL, pages]
+    [changeState]
   );
 
-  useEffect(() => {
-    const createdPages = Array.from({ length: info.pages }, (_, i) => {
-      const URLWithPage = new URL(apiURL);
-
-      URLWithPage.searchParams.set('page', i + 1);
-
-      return URLWithPage;
-    });
-
-    setPages(createdPages);
-  }, [info, apiURL]);
-
-  if (pages.length <= 1) return null;
+  if (info.pages <= 1) return null;
 
   return (
     <StyledPagination>
-      {activePage > 1 && (
+      {activePage > 2 && (
         <>
-          <Page onClick={pageClickHandler(0)}>« First</Page>
+          <Page onClick={handlePageOnClick(0)}>« First</Page>
           <Ellipsis>…</Ellipsis>
         </>
       )}
-      {activePage > 0 && (
-        <Page onClick={pageClickHandler(activePage - 1)}>{activePage}</Page>
+      {activePage > 1 && (
+        <Page onClick={handlePageOnClick(activePage - 1)}>
+          {activePage - 1}
+        </Page>
       )}
+
       <Page active aria-current="page">
-        {activePage + 1}
+        {activePage}
       </Page>
-      {activePage < pages.length - 1 && (
-        <Page onClick={pageClickHandler(activePage + 1)}>{activePage + 2}</Page>
+      {activePage < info.pages && (
+        <Page onClick={handlePageOnClick(activePage + 1)}>
+          {activePage + 1}
+        </Page>
       )}
-      {activePage < pages.length - 2 && (
+      {page < info.pages - 1 && (
         <>
           <Ellipsis>…</Ellipsis>
-          <Page onClick={pageClickHandler(pages.length - 1)}>Last »</Page>
+          <Page onClick={handlePageOnClick(info.pages)}>Last »</Page>
         </>
       )}
     </StyledPagination>

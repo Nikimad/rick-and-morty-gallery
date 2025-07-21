@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { usePopup } from '../../hooks/usePopup';
 
 import styled from 'styled-components';
@@ -10,8 +10,15 @@ import { CardPopup } from './CardPopup';
 
 export const Card = (props) => {
   const { status, name, species, type, gender, image } = props;
+
   const cardRef = useRef(null);
+  const [episodesList, setEpisodesList] = useState([]);
   const { isPopupOpen, openPopup, closePopup } = usePopup(cardRef);
+
+  const handleAddEpisodes = useCallback(
+    (episodes) => setEpisodesList(episodes),
+    []
+  );
 
   return (
     <StyledCardContainer onClick={openPopup} ref={cardRef} tabIndex={0}>
@@ -29,7 +36,11 @@ export const Card = (props) => {
           openPopup={openPopup}
           closePopup={closePopup}
         >
-          <CardPopup data={props} />
+          <CardPopup
+            data={props}
+            episodesList={episodesList}
+            onEpisodesAdd={handleAddEpisodes}
+          />
         </Popup>
       )}
     </StyledCardContainer>
