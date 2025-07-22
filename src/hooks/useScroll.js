@@ -1,38 +1,36 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 export const useScroll = (rootRef) => {
+  const scrollRef = useRef(0);
+
   const blockScroll = useCallback(() => {
-    if (!rootRef?.current) return;
+    if (!rootRef.current) return;
 
-    const isScrollHeightEqual =
-      Math.abs(
-        document.documentElement.scrollHeight - rootRef.current.scrollHeight
-      ) <= 1;
+    scrollRef.current = window.scrollY;
+    const isScrollBarExist =
+      window.innerWidth - document.documentElement.clientWidth > 0;
 
-    if (isScrollHeightEqual) {
-      rootRef.current.style.setProperty(
-        'bottom',
-        `-${Math.abs(
-          document.documentElement.clientHeight -
-            rootRef.current.getBoundingClientRect().bottom
-        )}px`
-      );
-      rootRef.current.style.setProperty('overflow-y', 'scroll');
+    rootRef.current.style.position = 'fixed';
+    rootRef.current.style.top = `-${scrollRef.current}px`;
+    rootRef.current.style.left = '0';
+    rootRef.current.style.right = '0';
+    rootRef.current.style.width = '100%';
+    if (isScrollBarExist) {
+      rootRef.current.style.overflowY = 'scroll';
     }
-    rootRef.current.style.setProperty('position', 'fixed');
-    rootRef.current.style.setProperty('width', '100%');
   }, [rootRef]);
 
   const unblockScroll = useCallback(() => {
-    if (!rootRef?.current) return;
-
-    const restoredScrollPosition = Math.abs(
-      rootRef.current.getBoundingClientRect().top
-    );
+    if (!rootRef.current) return;
 
     rootRef.current.removeAttribute('style');
 
-    window.scrollTo(0, restoredScrollPosition);
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, scrollRef.current);
+
+    requestAnimationFrame(() => {
+      document.documentElement.style.scrollBehavior = '';
+    });
   }, [rootRef]);
 
   return { blockScroll, unblockScroll };
